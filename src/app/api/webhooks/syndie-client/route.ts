@@ -112,11 +112,11 @@ async function processLeadWebhook(payload: SyndieWebhookPayload): Promise<Webhoo
       console.log('existing lead')
       if(leadData.linkedin_connection_status === "replied"){
         console.log('inside')
-          if(!process.env.SLACK_WEBHOOK_URL){
+          if(!process.env.SLACK_WEBHOOK_URL_CLIENT){
             console.log('No Slack webhook URL configured, skipping notification')
           }else {
             try {
-              await fetch(process.env.SLACK_WEBHOOK_URL!, {
+              await fetch(process.env.SLACK_WEBHOOK_URL_CLIENT!, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
