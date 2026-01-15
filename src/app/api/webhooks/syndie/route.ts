@@ -111,23 +111,23 @@ async function processLeadWebhook(payload: SyndieWebhookPayload): Promise<Webhoo
       console.log('existing lead')
       if(leadData.linkedin_connection_status === "replied"){
         console.log('inside')
-          if(!process.env.SLACK_WEBHOOK_URL){
-            console.log('No Slack webhook URL configured, skipping notification')
-          }else {
-            try {
-              await fetch(process.env.SLACK_WEBHOOK_URL!, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  text: `Reply received for lead: ${payload.firstName} ${payload.lastName} (${payload.email || 'no email'})\nLinkedIn: ${payload.linkedinUrl || 'N/A'}\nCompany: ${payload.company || 'N/A'}\nJob Title: ${payload.jobtitle || 'N/A'}\nCampaign: ${payload.campaign?.name || 'N/A'}\n\nReply Message: ${payload?.reply?.message || 'N/A'}`
-                })
-              })
-            } catch (err) {
-              console.error('Failed to send Slack notification:', err)
-            }
-          }
           if((existingLead as any).crm_entry === 0){
-              console.log("entrying into the db and crm")
+              console.log("entrying into the db, crm and hit slack")
+              if(!process.env.SLACK_WEBHOOK_URL){
+                console.log('No Slack webhook URL configured, skipping notification')
+              }else {
+                try {
+                  await fetch(process.env.SLACK_WEBHOOK_URL!, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      text: `Reply received for lead: ${payload.firstName} ${payload.lastName} (${payload.email || 'no email'})\nLinkedIn: ${payload.linkedinUrl || 'N/A'}\nCompany: ${payload.company || 'N/A'}\nJob Title: ${payload.jobtitle || 'N/A'}\nCampaign: ${payload.campaign?.name || 'N/A'}\n\nReply Message: ${payload?.reply?.message || 'N/A'}`
+                    })
+                  })
+                } catch (err) {
+                  console.error('Failed to send Slack notification:', err)
+                }
+              }
               try {
                   await entryToCrm(syndieData)
                   console.log("crm done")
